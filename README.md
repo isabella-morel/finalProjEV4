@@ -1,1 +1,1 @@
-# finalProjEV4
+# Sky Map Generator
