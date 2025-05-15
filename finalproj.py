@@ -1,10 +1,10 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title= "sky map"
-    star= ft.Image(src="star.png",width=20, height=20)
-    text= ft.Text("SKY MAP",size=30,color="blue",font_family="georgia",italic=True,
-    weight=ft.FontWeight.W_200,)
+    page.title= "Sky Map"
+    star= ft.Image(src="star.png", width=20, height=20)
+    text= ft.Text("SKY MAP", size=30,color="blue", font_family="georgia", 
+                  italic=True, weight=ft.FontWeight.W_200)
 
     day =ft.TextField(label="day",width=100)
     month = ft.TextField(label="month",width=100)
