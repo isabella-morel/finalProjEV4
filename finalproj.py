@@ -26,7 +26,6 @@ def main(page: ft.Page):
             show_error("All fields must contain valid number.")
     submit= ft.Elevatedbutton("Submit", width=100, on_click=add_pic)
 
-
     page.add(ft.Row([star,text,star], alignment = ft.MainAxisAlignment.CENTER),
         ft.Divider(),
         ft.Row([day,month,year,hour,minute],
