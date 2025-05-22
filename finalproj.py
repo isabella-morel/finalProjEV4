@@ -1,10 +1,73 @@
 import flet as ft
+from datetime import datetime
+from pytz import timezone
+from starplot import MapPlot, Projection, _
+from starplot.styles import PlotStyle, extensions
 
-def star_chart(year, month, day, hour, minute):
-    pass
+tz = timezone("America/New_York")
 
-def main(page: ft.Page):
+async def star_chart(year, month, day, hour, minute):
+    global dt
+    dt = datetime(year, month, day, hour, minute, 0, tzinfo=tz)
+
+    plot = MapPlot(
+        projection= Projection.ZENITH,
+        lat = 18.4861, # SD, DR
+        lon = -69.9312,
+        style = PlotStyle().extend(extensions.BLUE_GOLD),
+        resolution = 3600,
+        autoscale= True
+    )
+
+    plot.horizon()
+    plot.constellations()
+    plot.stars(where = [_.magnitude < 4.6], where_labels = [_.magnitude < 2.1])
+    plot.galaxies(where = [_.magnitude < 9], true_size = False, labels = None)
+    plot.open_clusters(where=[_.magnitude < 9], true_size=False, labels=None)
+    plot.constellation_borders()
+    plot.ecliptic()
+    plot.celestial_equator()
+    plot.milky_way()
+
+    plot.marker(
+        ra=12.36 * 15,
+        dec=25.85,
+        style={
+            "marker": {
+                "size": 60,
+                "symbol": "circle",
+                "fill": "none",
+                "color": None,
+                "edge_color": "hsl(44, 70%, 73%)",
+                "edge_width": 2,
+                "line_style": [1, [2, 3]],
+                "alpha": 1,
+                "zorder": 100,
+            },
+            "label": {
+                "zorder": 200,
+                "font_size": 22,
+                "font_weight": "bold",
+                "font_color": "hsl(44, 70%, 64%)",
+                "font_alpha": 1,
+                "offset_x": "auto",
+                "offset_y": "auto",
+                "anchor_point": "top right",
+            },
+        },
+        label="Mel 111",
+    )
+
+    plot.constellation_labels()
+    plot.export(f"assets/star_chart_detail{dt}.png", transparent=True, padding=0.1)
+
+async def main(page: ft.Page):
+
     page.title= "Sky Map"
+
+    page.window.height = 750
+    page.window.width = 1000
+
     star= ft.Image(src="star.png", width=20, height=20)
     text= ft.Text("SKY MAP", size=30,color="blue", font_family="georgia", 
                   italic=True, weight=ft.FontWeight.W_200)
@@ -13,9 +76,9 @@ def main(page: ft.Page):
     month = ft.TextField(label="Month",width=100)
     year = ft.TextField(label="year",width=100)
     hour = ft.TextField(label="Hour",width=100)
-    minute = ft.TextField(label="Minute",width=100)
+    minute = ft.TextField(label="minute",width=100)
     
-    picture = ft.Image(src="star.png, width=400, height=400, visible=False")
+    picture = ft.Image(src="star.png", width=540, height=540, visible=False)
     
     bottom_sheet = ft.BottomSheet(
         content=ft.Container(
@@ -31,13 +94,13 @@ def main(page: ft.Page):
         bottom_sheet.open = True
         page.update()
         
-    def add_pic(e):
+    async def add_pic(e):
         try:
-            y= int(year.value)
-            m= int(month.value)
-            d= int(day.value)
-            h= int(hour.vaulue)
-            min= int(minute.value)
+            y = int(year.value)
+            m = int(month.value)
+            d = int(day.value)
+            h = int(hour.value)
+            mi = int(minute.value)
             
             if y < 2000 or y > 2024:
                 show_error("Year must be between 2000 and 2024.")
@@ -51,13 +114,13 @@ def main(page: ft.Page):
             if h < 0 or h > 23:
                 show_error("Hour must be between 0 and 23.")
                 return
-            if min < 0 or min > 59:
-                show_error("Minute must be between 0 and 59.")
+            if mi < 0 or mi > 59:
+                show_error("minute must be between 0 and 59.")
                 return
             
-            star_chart(y, m, d, h, min)
-            file = f"star_chart_detail.png"
-            
+            await star_chart(y, m, d, h, mi)
+            file = f"star_chart_detail{dt}.png"
+
             picture.src = file
             picture.visible = True
             page.update()
