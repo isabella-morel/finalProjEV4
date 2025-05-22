@@ -1,3 +1,8 @@
+# https://starplot.dev/examples/star-chart-detail/
+# https://flet.dev/docs/controls/bottomsheet/
+# https://www.w3resource.com/python-interview/what-are-async-and-await-keywords-in-python.php 
+# ^^ THIS WAS A LIFE SAVIOR OMG THE HOURS I SPENT RESEARCHING TO FIND THIS - Isabella
+
 import flet as ft
 from datetime import datetime
 from pytz import timezone
