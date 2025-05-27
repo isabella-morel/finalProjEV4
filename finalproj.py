@@ -11,14 +11,22 @@ from starplot.styles import PlotStyle, extensions
 
 tz = timezone("America/New_York")
 
-async def star_chart(year, month, day, hour, minute):
+locations = {
+    "Santo Domingo, DR":(18.4861,-69.9312),
+    "New York, USA": (40.7128,-74.0060),
+    "London, UK": (51.5074,-0.1278),
+    "Tokyo, Japan": (35.6762, 1396503),
+    "Sydney, Australia":(-33.8688, 1512093)
+}
+
+async def star_chart(year, month, day, hour, minute, lat, lon):
     global dt
     dt = datetime(year, month, day, hour, minute, 0, tzinfo=tz)
 
     plot = MapPlot(
         projection= Projection.ZENITH,
-        lat = 18.4861, # SD, DR
-        lon = -69.9312,
+        lat = lat,
+        lon = lon,
         style = PlotStyle().extend(extensions.BLUE_GOLD),
         resolution = 3600,
         autoscale= True
@@ -70,7 +78,7 @@ async def main(page: ft.Page):
 
     page.title= "Sky Map"
 
-    page.window.height = 750
+    page.window.height = 810
     page.window.width = 1000
 
     star= ft.Image(src="star.png", width=20, height=20)
@@ -82,9 +90,13 @@ async def main(page: ft.Page):
     year = ft.TextField(label="year",width=100)
     hour = ft.TextField(label="Hour",width=100)
     minute = ft.TextField(label="minute",width=100)
+
+    location_dropdown = ft.Dropdown(label = "Select Location",
+                        options = [ft.dropdown.Option(loc) for loc in locations.keys()],
+                        width = 250)
     
     picture = ft.Image(src="star.png", width=540, height=540, visible=False)
-    
+
     bottom_sheet = ft.BottomSheet(
         content=ft.Container(
             content=ft.Text("Error message will appear here."),
@@ -106,6 +118,10 @@ async def main(page: ft.Page):
             d = int(day.value)
             h = int(hour.value)
             mi = int(minute.value)
+
+            if not location_dropdown.value:
+                show_error("Please selec a location.")
+                return
             
             if y < 2000 or y > 2024:
                 show_error("Year must be between 2000 and 2024.")
@@ -123,6 +139,9 @@ async def main(page: ft.Page):
                 show_error("minute must be between 0 and 59.")
                 return
             
+            location_label = location_dropdown.value
+            lat, lon = locations[location_label]
+
             await star_chart(y, m, d, h, mi)
             file = f"star_chart_detail{dt}.png"
 
@@ -138,6 +157,7 @@ async def main(page: ft.Page):
 
     page.add(ft.Row([star,text,star], alignment = ft.MainAxisAlignment.CENTER),
         ft.Divider(),
+        ft.Row([location_dropdown], alignment = ft.MainAxisAlignment.CENTER),
         ft.Row([day,month,year,hour,minute],
         alignment = ft.MainAxisAlignment.CENTER,
         ),
