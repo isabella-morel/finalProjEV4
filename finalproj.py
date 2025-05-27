@@ -1,6 +1,7 @@
 # https://starplot.dev/examples/star-chart-detail/
 # https://flet.dev/docs/controls/bottomsheet/
 # https://www.w3resource.com/python-interview/what-are-async-and-await-keywords-in-python.php 
+# https://flet.dev/docs/getting-started/async-apps
 # ^^ THIS WAS A LIFE SAVIOR OMG THE HOURS I SPENT RESEARCHING TO FIND THIS - Isabella
 
 import flet as ft
@@ -19,7 +20,7 @@ locations = {
     "Sydney, Australia":(-33.8688, 1512093)
 }
 
-async def star_chart(year, month, day, hour, minute, lat, lon):
+async def star_chart(year, month, day, hour, minute, lat, lon, location_label):
     global dt
     dt = datetime(year, month, day, hour, minute, 0, tzinfo=tz)
 
@@ -72,7 +73,8 @@ async def star_chart(year, month, day, hour, minute, lat, lon):
     )
 
     plot.constellation_labels()
-    plot.export(f"assets/star_chart_detail{dt}.png", transparent=True, padding=0.1)
+    safe_location = location_label.replace(" ", "_").replace(",", "")
+    plot.export(f"assets/star_chart_{safe_location}_{dt}.png", transparent=True, padding=0.1)
 
 async def main(page: ft.Page):
 
@@ -142,8 +144,8 @@ async def main(page: ft.Page):
             location_label = location_dropdown.value
             lat, lon = locations[location_label]
 
-            await star_chart(y, m, d, h, mi)
-            file = f"star_chart_detail{dt}.png"
+            await star_chart(y, m, d, h, mi, lat, lon, location_label)
+            file = f"star_chart_{location_label.replace(' ', '_').replace(',', '')}_{dt}.png"
 
             picture.src = file
             picture.visible = True
