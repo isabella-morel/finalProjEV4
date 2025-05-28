@@ -89,9 +89,9 @@ async def main(page: ft.Page):
 
     day =ft.TextField(label="Day",width=100)
     month = ft.TextField(label="Month",width=100)
-    year = ft.TextField(label="year",width=100)
+    year = ft.TextField(label="Year",width=100)
     hour = ft.TextField(label="Hour",width=100)
-    minute = ft.TextField(label="minute",width=100)
+    minute = ft.TextField(label="Minute",width=100)
 
     location_dropdown = ft.Dropdown(label = "Select Location",
                         options = [ft.dropdown.Option(loc) for loc in locations.keys()],
@@ -106,6 +106,7 @@ async def main(page: ft.Page):
         ),
         open=False
     )
+    
     page.overlay.append(bottom_sheet)
     
     def show_error(message):
@@ -154,7 +155,6 @@ async def main(page: ft.Page):
         except ValueError:
             show_error("All fields must contain valid numbers.")
             
-
     submit= ft.ElevatedButton("Submit", width=100, on_click=add_pic)
 
     page.add(ft.Row([star,text,star], alignment = ft.MainAxisAlignment.CENTER),
